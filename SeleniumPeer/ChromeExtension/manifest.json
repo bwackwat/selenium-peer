@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+
+  "name": "SeleniumPeer Extension",
+  "description": "Required for the creation of page objects through the SeleniumPeer Application",
+  "version": "1.0",
+
+  "content_scripts" : [
+    {
+      "matches" : [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js" : ["jquery-2.0.0.js", "json2.js", "content.js"],
+      "all_frames": true
+    }
+  ],
+
+  "permissions": ["tabs", "*://*/*"],
+
+  "browser_action": {
+    "default_icon": "SeleniumPeer.png",
+    "default_title": "SeleniumPeer, Engaging"
+  }
+}
