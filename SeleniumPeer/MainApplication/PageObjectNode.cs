@@ -121,24 +121,30 @@ namespace SeleniumPeer.MainApplication
         {
             var lines = new List<string>();
 
-            lines.Add("using Bumblebee.Implementation;");
-            lines.Add("using Bumblebee.Interfaces;");
-            lines.Add("using Bumblebee.Setup;");
             lines.Add("using OpenQA.Selenium;");
             lines.Add("");
             lines.Add("namespace " + Exporter.PageObjectLibraryName);
             lines.Add("{");
-            lines.Add("\tpublic class " + Name + " : BusinessModePage");
+            lines.Add("\tpublic class " + Name);
             lines.Add("\t{");
-            lines.Add("\t\tpublic " + Name + "(Session session)");
-            lines.Add("\t\t\t: base(session)");
+            
+            foreach (WebElementNode node in Children)
+            {
+                lines.Add("\t\tpublic IWebElement " + node.Label + ";");
+            }
+
+            lines.Add("");
+            lines.Add("\t\tpublic " + Name + "(IWebDriver driver)");
             lines.Add("\t\t{");
-            lines.Add("\t\t}");
+            lines.Add("\t\t\tdriver.Navigate().GoToUrl(\"INSERT PAGE URL HERE\");");
+            lines.Add("");
 
             foreach (WebElementNode node in Children)
             {
-                lines.AddRange(node.Build());
+                lines.Add(node.Build());
             }
+
+            lines.Add("\t\t}");
 
             lines.Add("\t}");
             lines.Add("}");
@@ -146,11 +152,11 @@ namespace SeleniumPeer.MainApplication
             return lines.ToArray();
         }
 
-        /// <summary>
-        ///     Builds the content of this PageObjectNode into raw .cs class files. Uses the
-        ///     "PageObjects" output folder and ProcessStartInfo to open them after.
-        /// </summary>
-        public override void BuildRaw()
+    /// <summary>
+    ///     Builds the content of this PageObjectNode into raw .cs class files. Uses the
+    ///     "PageObjects" output folder and ProcessStartInfo to open them after.
+    /// </summary>
+    public override void BuildRaw()
         {
             if (Name == null)
             {

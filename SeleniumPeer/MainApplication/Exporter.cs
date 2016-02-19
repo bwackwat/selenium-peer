@@ -23,10 +23,10 @@ namespace SeleniumPeer.MainApplication
         public static string TestsFolder = "\\Tests\\";
         public static string BlocksFolder = "\\Blocks\\";
 
-        public static string TreeName = "MBRegressionLibrary.xml";
+        public static string TreeName = "TestLibrary.xml";
         
-        public static string PageObjectLibraryName = "MBRegressionLibrary";
-        public static string PageObjectTestLibraryName = "MBRegressionLibrary.Tests";
+        public static string PageObjectLibraryName = "TestingFramework.PageObjects";
+        public static string PageObjectTestLibraryName = "TestingFramework.Tests";
 
         //An instance variable to keep track of the .cs class files to open after creating them.
         public static List<string> PagesToOpen = new List<string>();
@@ -255,47 +255,44 @@ namespace SeleniumPeer.MainApplication
         {
             var lines = new List<string>();
 
-            lines.Add("using MBRegressionLibrary.Base;");
-            lines.Add("using MBRegressionLibrary.Clients;");
-            lines.Add("using MBRegressionLibrary.Tests.Attributes;");
-            lines.Add("using MBRegressionLibrary.Tests.Tests.BusinessMode;");
-            lines.Add("using MbUnit.Framework;");
-            lines.Add("using Bumblebee.Extensions;");
+            lines.Add("using OpenQA.Selenium;");
             lines.Add("using " + PageObjectLibraryName + ";");
             lines.Add("");
             lines.Add("namespace " + PageObjectTestLibraryName);
             lines.Add("{");
-            lines.Add("\t[Parallelizable]");
-            lines.Add("\t[Site(\"AutobotMaster2\")]");
-            lines.Add("\tinternal class " + testName + "Tests : AbstractBusinessModeTestSuite");
+            lines.Add("\tpublic class " + testName + " : TestBase");
             lines.Add("\t{");
-            lines.Add("\t\t[Test]");
-            lines.Add("\t\tpublic void RunSimple" + testName + "Test()");
+
+            lines.Add("\t\tpublic " + testName + "(IWebDriver driver) : base(driver)");
             lines.Add("\t\t{");
-            //Uses the NavLab NavigationLinkAttribute.
-            lines.Add("\t\t\tSession.CurrentBlock<BusinessModePage>().GoTo<" + testName + ">()");
+            lines.Add("\t\t}");
+            lines.Add("");
+
+            lines.Add("\t\toverride protected void RunTest()");
+            lines.Add("\t\t{");
+            lines.Add("\t\t\tvar page = new Page(driver); ");
+            lines.Add("");
 
             foreach (UserAction action in actions)
             {
                 if (action.Node.ToLower() == "select")
                 {
-                    lines.Add("\t\t\t\t." + action.Label + ".Options.Random().Click()");
+                    lines.Add("\t\t\tpage." + action.Label + ".Options.Random().Click();");
                 }
                 else if (action.Node.ToLower() == "input" && action.Type.ToLower() == "checkbox")
                 {
-                    lines.Add("\t\t\t\t." + action.Label + ".Toggle()");
+                    lines.Add("\t\t\tpage." + action.Label + ".Toggle();");
                 }
                 else if (action.Node.ToLower() == "input" && action.Type.ToLower() != "button" &&
                          action.Type.ToLower() != "submit")
                 {
-                    lines.Add("\t\t\t\t." + action.Label + ".EnterText(\"" + action.Text + "\")");
+                    lines.Add("\t\t\tpage." + action.Label + ".SendKeys(\"" + action.Text + "\");");
                 }
                 else
                 {
-                    lines.Add("\t\t\t\t." + action.Label + ".Click()");
+                    lines.Add("\t\t\tpage." + action.Label + ".Click();");
                 }
             }
-            lines.Add(";");
 
             lines.Add("\t\t}");
             lines.Add("\t}");

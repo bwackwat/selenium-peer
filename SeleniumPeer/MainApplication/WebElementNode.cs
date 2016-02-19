@@ -89,35 +89,10 @@ namespace SeleniumPeer.MainApplication
         /// <returns>
         ///     An enumerable, reusable ordered set of strings.
         /// </returns>
-        public IEnumerable<string> Build()
+        public string Build()
         {
-            var lines = new List<string>();
-            string webElementClass;
             string by;
-
-            lines.Add("");
-
-            if (Node.ToLower() == "select")
-            {
-                webElementClass = "SelectBox";
-            }
-            else if (Node.ToLower() == "input" && Type.ToLower() == "checkbox")
-            {
-                webElementClass = "Checkbox";
-            }
-            else if (Node.ToLower() == "input" && Type.ToLower() == "radio")
-            {
-                webElementClass = "RadioButtons";
-            }
-            else if (Node.ToLower() == "input" && Type.ToLower() != "button" && Type.ToLower() != "submit")
-            {
-                webElementClass = "TextField";
-            }
-            else
-            {
-                webElementClass = "Clickable";
-            }
-
+            
             if (Id != "null")
             {
                 by = "By.Id(\"" + Id + "\")";
@@ -135,26 +110,7 @@ namespace SeleniumPeer.MainApplication
                 by = "By.XPath(\"" + Path.Replace("\"", "\\\"") + "\")";
             }
 
-            if (IsEnumerable)
-            {
-                lines.Add("\t\tpublic IEnumerable<I" + webElementClass + "<" + ToPage + ">> " + Label);
-                lines.Add("\t\t{");
-                lines.Add("\t\t\tget");
-                lines.Add("\t\t\t{");
-                lines.Add("\t\t\t\treturn GetElements(" + by + ").Select(e => new " + webElementClass + "<" + ToPage +
-                          ">(this, e));");
-                lines.Add("\t\t\t}");
-            }
-            else
-            {
-                lines.Add("\t\tpublic I" + webElementClass + "<" + ToPage + "> " + Label);
-                lines.Add("\t\t{");
-                lines.Add("\t\t\tget { return new " + webElementClass + "<" + ToPage + ">(this, " + by + "); }");
-            }
-
-            lines.Add("\t\t}");
-
-            return lines.ToArray();
+            return "\t\t\t" + Label + " = driver.FindElement(" + by + ");";
         }
     }
 }
